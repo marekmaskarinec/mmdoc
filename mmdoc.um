@@ -32,7 +32,7 @@ fn (this: ^Record) toMd(): str {
 	return sprintf(
 		"## %s\n\n" +
 		"```%s\n%s```\n\n" +
-		"%s\n", lang, name, this.content, this.docs)
+		"%s\n", name, lang, this.content, this.docs)
 }
 
 fn (this: ^Record) toHtml(): str {
