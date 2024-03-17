@@ -46,19 +46,6 @@ fn (this: ^Record) toHtml(): str {
 		"<p>%s</p>\n", name, this.content, this.docs)
 }
 
-fn readall(f: std.File): str {
-    const blockSize = 16
-    res := ""
-
-    for ok := true; ok {
-	    var buff: [blockSize + 1]char
-	    ok = std.fread(f, ^[blockSize]char(&buff)) == 1
-	    res += str([]char(buff))
-    }
-
-    return res
-}
-
 fn hasPrefix(s, p: str, i: int): bool {
 	if len(s) - i < len(p) { return false }
 
@@ -208,9 +195,15 @@ fn main() {
 
 	if arg >= argc { help(); return }
 
-	f := std.fopen(std.argv(arg), "r")
-	recs := getRecords(split(readall(f), "\n"))
-	std.fclose(f)
+	f, err := std.fopen(std.argv(arg), "r")
+	std.exitif(err)
+
+	data, err := std.freadall(f)
+	std.exitif(err)
+	recs := getRecords(split(str(data), "\n"))
+
+	err = std.fclose(f)
+	std.exitif(err)
 
 	for i in recs {
 		switch exportType {
